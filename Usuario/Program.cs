@@ -1,6 +1,7 @@
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.Configuration;
+using Microsoft.OpenApi.Models;
 using System.IO;
 using System.Reflection;
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Usuario", Version = "v1" }); });
 
 // Configure log4net
 var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
@@ -20,11 +21,10 @@ XmlConfigurator.Configure(logRepository, new FileInfo(log4netConfigFile));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 

@@ -10,7 +10,7 @@ namespace Usuario.Controllers
     {
 
         
-        [HttpPost(Name = "Inserir")]
+        [HttpPost("Inserir")]
         public IActionResult Inserir([FromBody] UsuarioEntity usuario)
         {
             if (!ModelState.IsValid)
@@ -26,7 +26,7 @@ namespace Usuario.Controllers
             return Ok(new { message = "Usuário inserido com sucesso", usuario });
         }
 
-        [HttpGet(Name = "Obter")]
+        [HttpGet("Obter")]
         public IActionResult Obter(string cpf)
         {
 
@@ -36,7 +36,7 @@ namespace Usuario.Controllers
             return Ok(new { message = "Usuário obtido com sucesso", lista });
         }
 
-        [HttpPut(Name = "Atualizar")]
+        [HttpPut("Atualizar")]
         public IActionResult Atualizar([FromBody] UsuarioEntity usuario)
         {
             if (!ModelState.IsValid)
@@ -48,7 +48,7 @@ namespace Usuario.Controllers
             return Ok(new { message = "Usuário atualizado com sucesso", usuario });
         }
 
-        [HttpDelete(Name = "Deletar")]
+        [HttpDelete("Deletar")]
         public IActionResult Deletar(string cpf)
         {
             UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
