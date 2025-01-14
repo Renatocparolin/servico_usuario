@@ -7,67 +7,65 @@ namespace Usuario.Negocio
     public class UsuarioNegocio
     {
 
-        public bool InserirUsuario(UsuarioEntity usuario)
+        public RetornoEntity InserirUsuario(UsuarioEntity usuario)
         {
-            if (usuario == null)
-            {
-                throw new ArgumentNullException(nameof(usuario));
-            }
 
-            if (usuario.Id == 0)
-            {
-                throw new ArgumentException("Id é obrigatório");
-            }
+            var validaUsuario = ValidaDados(usuario);
 
-            if (string.IsNullOrWhiteSpace(usuario.Nome))
+            if (validaUsuario.CodigoErro == TipoRetorno.Sucesso)
             {
-                throw new ArgumentException("Nome é obrigatório");
-            }
+                if (!UsuarioExiste(usuario.Cpf))
+                {
+                    UsuariosDados usuariosDados = new UsuariosDados();
+                    var inseriuUsuario = usuariosDados.InserirUsuario(usuario);
 
-            if (string.IsNullOrWhiteSpace(usuario.Cpf))
+                    if (inseriuUsuario)
+                    {
+                        var retorno = new RetornoEntity();
+                        retorno.Mensagem = "Usuário inserido com sucesso!";
+                        retorno.CodigoErro = TipoRetorno.Sucesso;
+
+                        return retorno;
+                    }
+                    else
+                    {
+                        var retorno = new RetornoEntity();
+                        retorno.Mensagem = "Erro ao inserir usuário";
+                        retorno.CodigoErro = TipoRetorno.Erro;
+                        return retorno;
+                    }
+
+
+                }
+                else
+                {
+                    var retorno = new RetornoEntity();
+                    retorno.Mensagem = "Usuário já existe na base de dados";
+                    retorno.CodigoErro = TipoRetorno.Erro;
+                    return retorno;
+
+                }
+            }
+            else
             {
-                throw new ArgumentException("CPF é obrigatório.");
+                return validaUsuario;
             }
-
-            if (!ValidarCPF(usuario.Cpf))
-            {
-                throw new ArgumentException("CPF inválido.");
-            }
-
-            if (string.IsNullOrEmpty(usuario.Sexo))
-            {
-                throw new ArgumentException("Sexo é obrigatório.");
-            }
-
-            if (string.IsNullOrEmpty(usuario.Data_Nascimento.ToString()))
-            {
-                throw new ArgumentException("Data de nascimento é obrigatória.");
-            }
-
-            if (!ValidarData(usuario.Data_Nascimento.ToString()))
-            {
-                throw new ArgumentException("Data de nascimento inválida.");
-            }
-
-            if (usuario.Cep == 0)
-            {
-                throw new ArgumentException("CEP é obrigatório.");
-            }
-
-            if (string.IsNullOrWhiteSpace(usuario.Logradouro))
-            {
-                throw new ArgumentException("Logradouro é obrigatório.");
-            }
-
-            if (usuario.Numero == 0)
-            {
-                throw new ArgumentException("Número é obrigatório.");
-            }
-
-            UsuariosDados usuariosDados = new UsuariosDados();
-            return usuariosDados.InserirUsuario(usuario);
         }
 
+        public bool UsuarioExiste(string cpf)
+        {
+            UsuariosDados usuariosDados = new UsuariosDados();
+            var retorno = usuariosDados.ListarUsuarios(cpf);
+
+            if (retorno.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public List<UsuarioEntity> ListarUsuarios(string cpf)
         {
@@ -75,22 +73,74 @@ namespace Usuario.Negocio
             return usuariosDados.ListarUsuarios(cpf);
         }
 
-        public bool AtualizarUsuario(UsuarioEntity usuario)
+        public RetornoEntity AtualizarUsuario(UsuarioEntity usuario)
         {
-            UsuariosDados usuariosDados = new UsuariosDados();
-            return usuariosDados.AtualizarUsuario(usuario);
+           var validaUsuario = ValidaDados(usuario);
+
+            if (validaUsuario.CodigoErro == TipoRetorno.Sucesso)
+            {
+                if (!UsuarioExiste(usuario.Cpf))
+                {
+                    var retorno = new RetornoEntity();
+                    retorno.Mensagem = "Usuário não existe na base de dados";
+                    retorno.CodigoErro = TipoRetorno.Erro;
+                    return retorno;
+                }
+                else
+                {
+                    UsuariosDados usuariosDados = new UsuariosDados();
+
+                    var atualizouUsuario = usuariosDados.AtualizarUsuario(usuario);
+
+                    if (atualizouUsuario)
+                    {
+                        var retorno = new RetornoEntity();
+                        retorno.Mensagem = "Usuário atualizado com sucesso!";
+                        retorno.CodigoErro = TipoRetorno.Sucesso;
+                        return retorno;
+                    }
+                    else
+                    {
+                        var retorno = new RetornoEntity();
+                        retorno.Mensagem = "Erro ao atualizar usuário";
+                        retorno.CodigoErro = TipoRetorno.Erro;
+                        return retorno;
+                    }
+                }
+            }
+            else
+            {
+                return validaUsuario;
+            }
         }
 
-        public bool DeletarUsuario(string cpf)
+        public RetornoEntity DeletarUsuario(string cpf)
         {
             UsuariosDados usuariosDados = new UsuariosDados();
-            return usuariosDados.DeletarUsuario(cpf);
+            var deletouUsuario = usuariosDados.DeletarUsuario(cpf);
+
+            if (deletouUsuario)
+            {
+                var retorno = new RetornoEntity();
+                retorno.Mensagem = "Usuário deletado com sucesso!";
+                retorno.CodigoErro = TipoRetorno.Sucesso;
+                return retorno;
+            }
+            else
+            {
+                var retorno = new RetornoEntity();
+                retorno.Mensagem = "Erro ao deletar usuário";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }   
         }
 
 
 
         public static bool ValidarCPF(string cpf)
         {
+
+           
             if (string.IsNullOrWhiteSpace(cpf)) return false;
 
             // Remove caracteres não numéricos
@@ -140,6 +190,87 @@ namespace Usuario.Negocio
         {
             return DateTime.TryParse(data, out _);
 
+        }
+
+        public RetornoEntity ValidaDados(UsuarioEntity usuario)
+        {
+            
+            var retorno = new RetornoEntity();
+            retorno.CodigoErro = TipoRetorno.Sucesso;
+            retorno.Mensagem = "Dados válidos";
+
+            if (usuario == null)
+            {
+                retorno.Mensagem = "Usuário é obrigatório";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (string.IsNullOrWhiteSpace(usuario.Nome))
+            {
+                retorno.Mensagem = "Nome é obrigatório.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (string.IsNullOrWhiteSpace(usuario.Cpf))
+            {
+                retorno.Mensagem = "CPF é obrigatório.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (!ValidarCPF(usuario.Cpf))
+            {
+               retorno.Mensagem = "CPF inválido.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (string.IsNullOrEmpty(usuario.Sexo))
+            {
+                retorno.Mensagem = "Sexo é obrigatório.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (string.IsNullOrEmpty(usuario.Data_Nascimento.ToString()))
+            {
+                retorno.Mensagem = "Data de nascimento é obrigatória.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (!ValidarData(usuario.Data_Nascimento.ToString()))
+            {
+                retorno.Mensagem = "Data de nascimento inválida.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (usuario.Cep == 0)
+            {
+                retorno.Mensagem = "CEP é obrigatório.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (string.IsNullOrWhiteSpace(usuario.Logradouro))
+            {
+                retorno.Mensagem = "Logradouro é obrigatório.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            if (usuario.Numero == 0)
+            {
+                retorno.Mensagem = "Número é obrigatório.";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
+            return retorno;
+           
         }
 
     }

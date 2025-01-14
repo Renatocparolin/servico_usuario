@@ -21,9 +21,9 @@ namespace Usuario.Controllers
 
             UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
 
-            usuarioNegocio.InserirUsuario(usuario);
+            var retorno = usuarioNegocio.InserirUsuario(usuario);
 
-            return Ok(new { message = "Usuário inserido com sucesso", usuario });
+            return Ok(new { message = string.Concat(retorno.CodigoErro,"-",retorno.Mensagem), usuario });
         }
 
         [HttpGet("Obter")]
@@ -44,8 +44,10 @@ namespace Usuario.Controllers
                 return BadRequest(ModelState);
             }
             UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-            usuarioNegocio.AtualizarUsuario(usuario);
-            return Ok(new { message = "Usuário atualizado com sucesso", usuario });
+            
+            var retorno = usuarioNegocio.AtualizarUsuario(usuario);
+
+            return Ok(new { message = string.Concat(retorno.CodigoErro, "-", retorno.Mensagem), usuario });
         }
 
         [HttpDelete("Deletar")]

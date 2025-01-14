@@ -8,7 +8,7 @@ namespace Usuario.Entity
 {
     public class UsuarioEntity
     {
-        public int Id { get; set; }
+       
         public string Nome { get; set; }
         public int Cep { get; set; }
         public string Logradouro { get; set; }
@@ -17,6 +17,7 @@ namespace Usuario.Entity
         public string Sexo { get; set; }
         public DateTime Data_Nascimento { get; set; }
         public string Cpf { get; set; }
+
     }
 
 

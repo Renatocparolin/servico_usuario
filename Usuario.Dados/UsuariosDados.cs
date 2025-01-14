@@ -22,7 +22,7 @@ namespace Usuario.Dados
             {
                 using var conn = new conexaoBanco();
 
-                string query = @"insert into usuario (id, nome, cep, logradouro, numero, complemento, sexo, data_nascimento, cpf) values (@id, @nome, @cep, @logradouro, @numero, @complemento, @sexo, @data_nascimento, @cpf);";
+                string query = @"insert into usuario (nome, cep, logradouro, numero, complemento, sexo, data_nascimento, cpf) values (@nome, @cep, @logradouro, @numero, @complemento, @sexo, @data_nascimento, @cpf);";
 
 
                 var result = conn.Connection.Execute(sql: query, param: usuario);
