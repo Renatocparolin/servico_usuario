@@ -8,22 +8,33 @@ namespace Usuario.Controllers
     [Route("[controller]")]
     public class UsuarioController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
 
-        
+        public UsuarioController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }   
+
         [HttpPost("Inserir")]
         public IActionResult Inserir([FromBody] UsuarioEntity usuario)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+
+                var retorno = usuarioNegocio.InserirUsuario(usuario);
+
+                return Ok(new { message = string.Concat(retorno.CodigoErro, "-", retorno.Mensagem), usuario });
             }
-
-
-            UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-
-            var retorno = usuarioNegocio.InserirUsuario(usuario);
-
-            return Ok(new { message = string.Concat(retorno.CodigoErro,"-",retorno.Mensagem), usuario });
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpGet("Obter")]
@@ -44,7 +55,7 @@ namespace Usuario.Controllers
                 return BadRequest(ModelState);
             }
             UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-            
+
             var retorno = usuarioNegocio.AtualizarUsuario(usuario);
 
             return Ok(new { message = string.Concat(retorno.CodigoErro, "-", retorno.Mensagem), usuario });
@@ -57,7 +68,7 @@ namespace Usuario.Controllers
             var retorno = usuarioNegocio.DeletarUsuario(cpf);
 
 
-            return Ok(new { message = string.Concat(retorno.CodigoErro, "-", retorno.Mensagem)});
+            return Ok(new { message = string.Concat(retorno.CodigoErro, "-", retorno.Mensagem) });
         }
 
     }
