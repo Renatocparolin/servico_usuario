@@ -15,7 +15,12 @@ namespace Usuario.Dados
 
         public conexaoBanco()
         {
-            Connection = new NpgsqlConnection("Host=localhost;Database=smallrents;Username=postgres;Password=photosmarT@01");
+            string dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER");
+            string dbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+            string connectionString = string.Format("Host=localhost;Database=smallrents;Username={0};Password={1}",
+                dbUser, dbPassword);
+
+            Connection = new NpgsqlConnection();
             Connection.Open();
 
         }
