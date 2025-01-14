@@ -1,6 +1,7 @@
 ﻿using Usuario.Entity;
 using Usuario.Dados;
 using Microsoft.Extensions.Configuration;
+using System.Xml;
 
 namespace Usuario.Negocio
 {
@@ -116,6 +117,15 @@ namespace Usuario.Negocio
 
         public RetornoEntity DeletarUsuario(string cpf)
         {
+
+            if (!UsuarioExiste(cpf))
+            {
+                var retorno = new RetornoEntity();
+                retorno.Mensagem = "Usuário não existe na base de dados";
+                retorno.CodigoErro = TipoRetorno.Erro;
+                return retorno;
+            }
+
             UsuariosDados usuariosDados = new UsuariosDados();
             var deletouUsuario = usuariosDados.DeletarUsuario(cpf);
 

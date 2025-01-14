@@ -54,8 +54,10 @@ namespace Usuario.Controllers
         public IActionResult Deletar(string cpf)
         {
             UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-            usuarioNegocio.DeletarUsuario(cpf);
-            return Ok(new { message = "Usuário deletado com sucesso" });
+            var retorno = usuarioNegocio.DeletarUsuario(cpf);
+
+
+            return Ok(new { message = string.Concat(retorno.CodigoErro, "-", retorno.Mensagem)});
         }
 
     }
