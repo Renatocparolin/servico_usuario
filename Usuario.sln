@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Usuario", "Usuario\Usuario.csproj", "{F03C3FA4-33B0-4AE8-B11A-281809392B26}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Usuario.Dados", "Usuario.Dados\Usuario.Dados.csproj", "{E5A2B98A-8F9D-4FDC-A395-950727CAE50D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Usuario.Entity", "Usuario.Entity\Usuario.Entity.csproj", "{5F998520-6E66-4E75-B508-34000E9E23E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestesUnitarios", "TestesUnitarios\TestesUnitarios.csproj", "{B4D8E8B0-12D1-4B3E-93B7-8B7F8F799264}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5F998520-6E66-4E75-B508-34000E9E23E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F998520-6E66-4E75-B508-34000E9E23E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F998520-6E66-4E75-B508-34000E9E23E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4D8E8B0-12D1-4B3E-93B7-8B7F8F799264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4D8E8B0-12D1-4B3E-93B7-8B7F8F799264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4D8E8B0-12D1-4B3E-93B7-8B7F8F799264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4D8E8B0-12D1-4B3E-93B7-8B7F8F799264}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
