@@ -3,13 +3,12 @@ version: '3.5'
 services:
   web:
     container_name: 'smallrents_usuario_container'
-    # change later with apps repository
-    image: 'vinibrito/demo-csharp'
+    image: 'renatocparolin/servidoraplicaca'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-smallrents}
     ports:
-     - "5000:5000"
+     - "5000:8080"
     depends_on:
      - "postgres"
     networks:
@@ -19,6 +18,9 @@ services:
     container_name: 'postgres_container'
     # change later with db repository
     image: 'renatocparolin/fiap_servico_usuario:120120251734'
+    build:
+      context: backend
+      dockerfile: Dockerfile.postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-smallrents}
