@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Usuario.Negocio\Usuario.Negocio.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestesIntegradosPostman\" />
+  </ItemGroup>
+
 </Project>

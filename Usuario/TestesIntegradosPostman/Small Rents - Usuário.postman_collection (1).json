@@ -1,0 +1,1181 @@
+{
+	"info": {
+		"_postman_id": "e11b62a4-aa85-48e6-9f35-36fbb1fe5815",
+		"name": "Small Rents - Usuário",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41104718"
+	},
+	"item": [
+		{
+			"name": "Testes Integrados",
+			"item": [
+				{
+					"name": "Fluxos Principais",
+					"item": [
+						{
+							"name": "Cadastro com Sucesso",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Quando eu realizar o cadastro com sucesso\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Sucesso-Usuário inserido com sucesso!\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"});\r",
+											"\r",
+											"const obterUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Obter?cpf=' + pm.environment.get(\"cpf\");\r",
+											"\r",
+											"pm.sendRequest(obterUsuarioURL, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Então devo conseguir consultar o usuário por CPF\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    var jsonData = response.json();\r",
+											"    pm.expect(jsonData.lista).to.not.be.empty;\r",
+											"    const result = jsonData.lista[0];\r",
+											"    pm.expect(result[\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const obterUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Obter?cpf=' + pm.environment.get(\"cpf\");\r",
+											"\r",
+											"pm.sendRequest(obterUsuarioURL, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Dado que o usuário não exista na base de dados da aplicação\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    var jsonData = response.json();\r",
+											"    pm.expect(jsonData.lista).to.be.empty;\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"cep\": {{$randomInt}},\r\n  \"logradouro\": \"{{$randomStreetAddress}}\",\r\n  \"numero\": {{$randomInt}},\r\n  \"complemento\": \"{{$randomCity}} - {{$randomCountry}}\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"{{data-nascimento}}\",\r\n  \"cpf\": \"{{cpf}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Inserir",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Inserir"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Alteração de Dados de Usuário",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Quando eu realizar uma alteração de dados com sucesso\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Sucesso-Usuário atualizado com sucesso!\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"logradouro\"]).to.be.equals(\"Novo Logradouro Teste\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"numero\"]).to.be.equals(61);\r",
+											"});\r",
+											"\r",
+											"const obterUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Obter?cpf=' + pm.environment.get(\"cpf\");\r",
+											"\r",
+											"pm.sendRequest(obterUsuarioURL, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Então devo conseguir consultar o usuário por CPF com dados atualizados \", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    var jsonData = response.json();\r",
+											"    pm.expect(jsonData.lista).to.not.be.empty;\r",
+											"    const result = jsonData.lista[0];\r",
+											"    pm.expect(result[\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"    pm.expect(result[\"logradouro\"]).to.be.equals(\"Novo Logradouro Teste\");\r",
+											"    pm.expect(result[\"numero\"]).to.be.equals(61);\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const criarUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Inserir';\r",
+											"const criarUsuarioRequest = {\r",
+											"    url: criarUsuarioURL,\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        \"Content-Type\": \"application/json\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": pm.variables.replaceIn(\"{{$randomFullName}}\"),\r",
+											"            \"cep\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"logradouro\": pm.variables.replaceIn(\"{{$randomStreetAddress}}\"),\r",
+											"            \"numero\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"complemento\": pm.variables.replaceIn(\"{{$randomCity}}\") + \" - \" + pm.variables.replaceIn(\"{{$randomCountry}}\"),\r",
+											"            \"sexo\": \"M\",\r",
+											"            \"data_Nascimento\": pm.environment.get(\"data-nascimento\"),\r",
+											"            \"cpf\": pm.environment.get(\"cpf\")\r",
+											"        })\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"\r",
+											"pm.sendRequest(criarUsuarioRequest, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Dado que o usuário já exista na base de dados da aplicação\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    const jsonData = response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Sucesso-Usuário inserido com sucesso!\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"cep\": {{$randomInt}},\r\n  \"logradouro\": \"Novo Logradouro Teste\",\r\n  \"numero\": 61,\r\n  \"complemento\": \"{{$randomCity}} - {{$randomCountry}}\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"{{data-nascimento}}\",\r\n  \"cpf\": \"{{cpf}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Atualizar",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Atualizar"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Exclusão de Usuário",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Quando eu realizar a exclusão do usuário com sucesso\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Sucesso-Usuário deletado com sucesso!\");\r",
+											"});\r",
+											"\r",
+											"const obterUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Obter?cpf=' + pm.environment.get(\"cpf\");\r",
+											"\r",
+											"pm.sendRequest(obterUsuarioURL, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Então não devo poder consultar o usuário por CPF\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    var jsonData = response.json();\r",
+											"    pm.expect(jsonData.lista).to.be.empty;\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const criarUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Inserir';\r",
+											"const criarUsuarioRequest = {\r",
+											"    url: criarUsuarioURL,\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        \"Content-Type\": \"application/json\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": pm.variables.replaceIn(\"{{$randomFullName}}\"),\r",
+											"            \"cep\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"logradouro\": pm.variables.replaceIn(\"{{$randomStreetAddress}}\"),\r",
+											"            \"numero\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"complemento\": pm.variables.replaceIn(\"{{$randomCity}}\") + \" - \" + pm.variables.replaceIn(\"{{$randomCountry}}\"),\r",
+											"            \"sexo\": \"M\",\r",
+											"            \"data_Nascimento\": pm.environment.get(\"data-nascimento\"),\r",
+											"            \"cpf\": pm.environment.get(\"cpf\")\r",
+											"        })\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"\r",
+											"pm.sendRequest(criarUsuarioRequest, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Dado que o usuário já exista na base de dados da aplicação\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    const jsonData = response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Sucesso-Usuário inserido com sucesso!\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/Usuario/Deletar?cpf={{cpf}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Deletar"
+									],
+									"query": [
+										{
+											"key": "cpf",
+											"value": "{{cpf}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Fluxos de Exceção",
+					"item": [
+						{
+							"name": "Tentativa de Cadastro com CPF já Cadastrado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Quando eu tentar realizar cadastro com o mesmo CPF\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Então devo receber a mensagem de erro correspondente\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Erro-Usuário já existe na base de dados\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const criarUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Inserir';\r",
+											"const criarUsuarioRequest = {\r",
+											"    url: criarUsuarioURL,\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        \"Content-Type\": \"application/json\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": pm.variables.replaceIn(\"{{$randomFullName}}\"),\r",
+											"            \"cep\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"logradouro\": pm.variables.replaceIn(\"{{$randomStreetAddress}}\"),\r",
+											"            \"numero\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"complemento\": pm.variables.replaceIn(\"{{$randomCity}}\") + \" - \" + pm.variables.replaceIn(\"{{$randomCountry}}\"),\r",
+											"            \"sexo\": \"M\",\r",
+											"            \"data_Nascimento\": pm.environment.get(\"data-nascimento\"),\r",
+											"            \"cpf\": pm.environment.get(\"cpf\")\r",
+											"        })\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"\r",
+											"pm.sendRequest(criarUsuarioRequest, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Dado que o usuário já exista na base de dados da aplicação\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    const jsonData = response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Sucesso-Usuário inserido com sucesso!\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"cep\": {{$randomInt}},\r\n  \"logradouro\": \"{{$randomStreetAddress}}\",\r\n  \"numero\": {{$randomInt}},\r\n  \"complemento\": \"{{$randomCity}} - {{$randomCountry}}\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"{{data-nascimento}}\",\r\n  \"cpf\": \"{{cpf}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Inserir",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Inserir"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Tentativa de Alteração com CPF inválido",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Quando eu tentar realizar alteração com CPF inválido\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Então devo receber a mensagem de erro correspondente\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Erro-CPF inválido.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const criarUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Inserir';\r",
+											"const criarUsuarioRequest = {\r",
+											"    url: criarUsuarioURL,\r",
+											"    method: 'POST',\r",
+											"    header: {\r",
+											"        \"Content-Type\": \"application/json\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify({\r",
+											"            \"nome\": pm.variables.replaceIn(\"{{$randomFullName}}\"),\r",
+											"            \"cep\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"logradouro\": pm.variables.replaceIn(\"{{$randomStreetAddress}}\"),\r",
+											"            \"numero\": pm.variables.replaceIn(\"{{$randomInt}}\"),\r",
+											"            \"complemento\": pm.variables.replaceIn(\"{{$randomCity}}\") + \" - \" + pm.variables.replaceIn(\"{{$randomCountry}}\"),\r",
+											"            \"sexo\": \"M\",\r",
+											"            \"data_Nascimento\": pm.environment.get(\"data-nascimento\"),\r",
+											"            \"cpf\": pm.environment.get(\"cpf\")\r",
+											"        })\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"\r",
+											"pm.sendRequest(criarUsuarioRequest, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Dado que o usuário já exista na base de dados da aplicação\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    const jsonData = response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Sucesso-Usuário inserido com sucesso!\");\r",
+											"    pm.expect(jsonData[\"usuario\"][\"cpf\"]).to.be.equals(pm.environment.get(\"cpf\"));\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{$randomFullName}}\",\r\n  \"cep\": {{$randomInt}},\r\n  \"logradouro\": \"Novo Logradouro Teste\",\r\n  \"numero\": 61,\r\n  \"complemento\": \"{{$randomCity}} - {{$randomCountry}}\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"{{data-nascimento}}\",\r\n  \"cpf\": \"0000000000\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Atualizar",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Atualizar"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Tentativa de Exclusão de CPF não Cadastrado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Quando eu tentar excluir o usuário\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Então devo receber a mensagem de erro correspondente\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData[\"message\"]).to.be.equals(\"Erro-Usuário não existe na base de dados\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const obterUsuarioURL = pm.collectionVariables.get(\"host\") + '/Usuario/Obter?cpf=' + pm.environment.get(\"cpf\");\r",
+											"\r",
+											"pm.sendRequest(obterUsuarioURL, (error, response) => {\r",
+											"  if (error) {\r",
+											"    console.log(error);\r",
+											"  }\r",
+											"\r",
+											"  pm.test(\"Dado que o usuário não exista na base de dados da aplicação\", function () {\r",
+											"    pm.expect(error).to.equal(null);\r",
+											"    pm.expect(response).to.have.property('code', 200);\r",
+											"    pm.expect(response).to.have.property('status', 'OK');\r",
+											"    var jsonData = response.json();\r",
+											"    pm.expect(jsonData.lista).to.be.empty;\r",
+											"  });\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/Usuario/Deletar?cpf={{cpf}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Deletar"
+									],
+									"query": [
+										{
+											"key": "cpf",
+											"value": "{{cpf}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Aqui estão presentes os testes de integração da aplicação REST.\n\nFluxos Principais:\n\n- Cadastro com Sucesso\n    \n\n> Dado que o usuário não exista na base de dados da aplicação  \nQuando eu realizar o cadastro com sucesso  \nEntão devo conseguir consultar o usuário por CPF \n  \n\n- Alteração de Dados de Usuário\n    \n\n> Dado que o usuário já exista na base de dados da aplicação  \nQuando eu realizar uma alteração de dados com sucesso  \nEntão devo conseguir consultar o usuário por CPF com dados atualizados \n  \n\n- Exclusão de Usuário\n    \n\n> Dado que o usuário já exista na base de dados da aplicação  \nQuando eu realizar a exclusão do usuário com sucesso  \nEntão não devo poder consultar o usuário por CPF \n  \n\nFluxos de Exceção\n\n- Tentativa de Cadastro com CPF já Cadastrado\n    \n\n> Dado que o usuário já exista na base de dados da aplicação  \nQuando eu tentar realizar cadastro com o mesmo CPF  \nEntão devo receber a mensagem de erro correspondente \n  \n\n- Tentativa de Alteração com CPF inválido\n    \n\n> Dado que o usuário já exista na base de dados da aplicação  \nQuando eu tentar realizar alteração com CPF inválido  \nEntão devo receber a mensagem de erro correspondente \n  \n\n- Tentativa de Exclusão de CPF não Cadastrado\n    \n\n> Dado que o usuário não exista na base de dados da aplicação  \nQuando eu tentar excluir o usuário  \nEntão devo receber a mensagem de erro correspondente",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"const getCpf = () => {\r",
+							"  const rnd = (n) => Math.round(Math.random() * n);\r",
+							"  const mod = (base, div) => Math.round(base - Math.floor(base / div) * div)\r",
+							"  const n = Array(9).fill('').map(() => rnd(9));\r",
+							"\r",
+							"  let d1 = n.reduce((total, number, index) => (total + (number * (10 - index))), 0)\r",
+							"  d1 = 11 - mod(d1, 11);\r",
+							"  if (d1 >= 10) d1 = 0;\r",
+							"  \r",
+							"  let d2 = (d1 * 2) + n.reduce((total, number, index) => (total + (number * (11 - index))), 0)\r",
+							"  d2 = 11 - mod(d2, 11);\r",
+							"  if (d2 >= 10) d2 = 0;\r",
+							"\r",
+							"  return `${n.join('')}${d1}${d2}`\r",
+							"}\r",
+							"\r",
+							"pm.environment.set('cpf', getCpf());\r",
+							"\r",
+							"const getBirthday = (yearsAgo) => {\r",
+							"    let now = new Date();\r",
+							"    now.setDate(now.getDate() - (yearsAgo * 365))\r",
+							"    return now.toISOString();\r",
+							"}\r",
+							"pm.environment.set('data-nascimento', getBirthday(25));\r",
+							"\r",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Exemplos",
+			"item": [
+				{
+					"name": "Cadastrar Novo Usuário",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"John Doe da Silva\",\r\n  \"cep\": 4726002,\r\n  \"logradouro\": \"Av. João Carlos da Silva Borges\",\r\n  \"numero\": 1040,\r\n  \"complemento\": \"Vila Cruzeiro, São Paulo - SP\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\r\n  \"cpf\": \"03236149060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/Usuario/Inserir",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"Usuario",
+								"Inserir"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sucesso-Usuário inserido com sucesso",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"John Doe da Silva\",\r\n  \"cep\": 4726002,\r\n  \"logradouro\": \"Av. João Carlos da Silva Borges\",\r\n  \"numero\": 1040,\r\n  \"complemento\": \"Vila Cruzeiro, São Paulo - SP\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\r\n  \"cpf\": \"03236149060\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Inserir",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Inserir"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 16 Jan 2025 02:02:25 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Sucesso-Usuário inserido com sucesso!\",\n    \"usuario\": {\n        \"nome\": \"John Doe da Silva\",\n        \"cep\": 4726002,\n        \"logradouro\": \"Av. João Carlos da Silva Borges\",\n        \"numero\": 1040,\n        \"complemento\": \"Vila Cruzeiro, São Paulo - SP\",\n        \"sexo\": \"M\",\n        \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\n        \"cpf\": \"03236149060\"\n    }\n}"
+						},
+						{
+							"name": "Erro-Usuário já existe na base de dados",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"John Doe da Silva\",\r\n  \"cep\": 4726002,\r\n  \"logradouro\": \"Av. João Carlos da Silva Borges\",\r\n  \"numero\": 1040,\r\n  \"complemento\": \"Vila Cruzeiro, São Paulo - SP\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\r\n  \"cpf\": \"03236149060\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Inserir",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Inserir"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 16 Jan 2025 02:02:54 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Erro-Usuário já existe na base de dados\",\n    \"usuario\": {\n        \"nome\": \"John Doe da Silva\",\n        \"cep\": 4726002,\n        \"logradouro\": \"Av. João Carlos da Silva Borges\",\n        \"numero\": 1040,\n        \"complemento\": \"Vila Cruzeiro, São Paulo - SP\",\n        \"sexo\": \"M\",\n        \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\n        \"cpf\": \"03236149060\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Atualizar Usuário",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"John Doe da Silva\",\r\n  \"cep\": 4726002,\r\n  \"logradouro\": \"Av. João Carlos da Silva Borges\",\r\n  \"numero\": 1040,\r\n  \"complemento\": \"APTO 123 - Vila Cruzeiro, São Paulo - SP\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\r\n  \"cpf\": \"03236149060\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/Usuario/Atualizar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"Usuario",
+								"Atualizar"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sucesso-Usuário atualizado com sucesso",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"John Doe da Silva\",\r\n  \"cep\": 4726002,\r\n  \"logradouro\": \"Av. João Carlos da Silva Borges\",\r\n  \"numero\": 1040,\r\n  \"complemento\": \"APTO 123 - Vila Cruzeiro, São Paulo - SP\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\r\n  \"cpf\": \"03236149060\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Atualizar",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Atualizar"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 16 Jan 2025 02:06:33 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Sucesso-Usuário atualizado com sucesso!\",\n    \"usuario\": {\n        \"nome\": \"John Doe da Silva\",\n        \"cep\": 4726002,\n        \"logradouro\": \"Av. João Carlos da Silva Borges\",\n        \"numero\": 1040,\n        \"complemento\": \"APTO 123 - Vila Cruzeiro, São Paulo - SP\",\n        \"sexo\": \"M\",\n        \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\n        \"cpf\": \"03236149060\"\n    }\n}"
+						},
+						{
+							"name": "Erro-CPF inválido.",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"John Doe da Silva\",\r\n  \"cep\": 4726002,\r\n  \"logradouro\": \"Av. João Carlos da Silva Borges\",\r\n  \"numero\": 1040,\r\n  \"complemento\": \"APTO 123 - Vila Cruzeiro, São Paulo - SP\",\r\n  \"sexo\": \"M\",\r\n  \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\r\n  \"cpf\": \"123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/Usuario/Atualizar",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Atualizar"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 16 Jan 2025 02:06:58 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Erro-CPF inválido.\",\n    \"usuario\": {\n        \"nome\": \"John Doe da Silva\",\n        \"cep\": 4726002,\n        \"logradouro\": \"Av. João Carlos da Silva Borges\",\n        \"numero\": 1040,\n        \"complemento\": \"APTO 123 - Vila Cruzeiro, São Paulo - SP\",\n        \"sexo\": \"M\",\n        \"data_Nascimento\": \"1990-10-10T20:12:26.131Z\",\n        \"cpf\": \"123\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Buscar Usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/Usuario/Obter?cpf=03236149060",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"Usuario",
+								"Obter"
+							],
+							"query": [
+								{
+									"key": "cpf",
+									"value": "03236149060"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Usuário obtido com sucesso",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/Usuario/Obter?cpf=03236149060",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Obter"
+									],
+									"query": [
+										{
+											"key": "cpf",
+											"value": "03236149060"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 16 Jan 2025 02:04:38 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Usuário obtido com sucesso\",\n    \"lista\": [\n        {\n            \"nome\": \"John Doe da Silva\",\n            \"cep\": 4726002,\n            \"logradouro\": \"Av. João Carlos da Silva Borges\",\n            \"numero\": 1040,\n            \"complemento\": \"Vila Cruzeiro, São Paulo - SP\",\n            \"sexo\": \"M\",\n            \"data_Nascimento\": \"1990-10-10T00:00:00\",\n            \"cpf\": \"03236149060\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Excluir Usuário",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/Usuario/Deletar?cpf=03236149060",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"Usuario",
+								"Deletar"
+							],
+							"query": [
+								{
+									"key": "cpf",
+									"value": "03236149060"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sucesso-Usuário deletado com sucesso",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/Usuario/Deletar?cpf=03236149060",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Deletar"
+									],
+									"query": [
+										{
+											"key": "cpf",
+											"value": "03236149060"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 16 Jan 2025 02:07:55 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Sucesso-Usuário deletado com sucesso!\"\n}"
+						},
+						{
+							"name": "Erro-Usuário não existe na base de dados",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/Usuario/Deletar?cpf=03236149060",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"Usuario",
+										"Deletar"
+									],
+									"query": [
+										{
+											"key": "cpf",
+											"value": "03236149060"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 16 Jan 2025 02:08:14 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Erro-Usuário não existe na base de dados\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://parolin.tplinkdns.com:65100",
+			"type": "default"
+		},
+		{
+			"key": "data-nascimento",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "cpf",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
